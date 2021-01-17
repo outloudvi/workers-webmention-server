@@ -1,0 +1,8 @@
+account_id = "TODO"
+kv_namespaces = [{binding = "KV", id = "TODO"}]
+name = "workers-webmention-server"
+route = ""
+type = "webpack"
+webpack_config = "webpack.config.js"
+workers_dev = true
+zone_id = ""
