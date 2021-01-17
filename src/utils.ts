@@ -1,7 +1,6 @@
 import minimatch from 'minimatch'
 import cheerio from 'cheerio'
-
-const KV_STORAGE_PREFIX = '_wm_'
+import { KV_STORAGE_PREFIX } from './consts'
 
 export function tryParse(text: string): Record<string, any> | null {
   try {

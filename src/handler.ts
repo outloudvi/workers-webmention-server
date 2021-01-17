@@ -1,3 +1,4 @@
+import { KV_STORAGE_PREFIX } from './consts'
 import {
   canMatch,
   findAllValuesInJson,
@@ -36,15 +37,7 @@ async function validateSource(src: string, dst: URL): Promise<number> {
   return findLinkInHTML(textIt, dst, src) ? 200 : 400
 }
 
-export async function handleRequest(request: Request): Promise<Response> {
-  if (
-    request.headers.get('Content-Type') != 'application/x-www-form-urlencoded'
-  ) {
-    return generateResponse(
-      400,
-      `Invalid content type: ${request.headers.get('Content-Type')}`,
-    )
-  }
+async function processWebmentionScan(request: Request): Promise<Response> {
   const formData = await request.formData().catch((_) => undefined)
   if (!formData) {
     return generateResponse(400, 'Invalid form data')
@@ -95,4 +88,31 @@ export async function handleRequest(request: Request): Promise<Response> {
         status: 400,
       })
   }
+}
+
+export async function handleRequest(request: Request): Promise<Response> {
+  if (
+    request.headers.get('Content-Type') === 'application/x-www-form-urlencoded'
+  ) {
+    // Webmention API
+    return await processWebmentionScan(request)
+  }
+
+  if (request.method === 'GET') {
+    // Webmention data API
+    const req = new URL(request.url)
+    req.hash = ''
+    const url = req.searchParams.get('url')
+    if (url && canMatch(req.host, allowedDomains)) {
+      const key = KV_STORAGE_PREFIX + String(url)
+      const val = (await KV.get(key)) || '[]'
+      return new Response(val, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    }
+  }
+
+  return generateResponse(400, `Bad request`)
 }
