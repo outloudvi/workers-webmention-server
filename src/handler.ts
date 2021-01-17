@@ -5,6 +5,7 @@ import {
   generateResponse,
   isValidUrl,
   tryParse,
+  updateStorage,
 } from './utils'
 
 const allowedDomains = ALLOWED_DOMAINS.split('|')
@@ -74,6 +75,8 @@ export async function handleRequest(request: Request): Promise<Response> {
   target.hash = ''
 
   const status = await validateSource(String(source), target)
+
+  await updateStorage(String(source), String(target), status)
 
   switch (status) {
     case 200:

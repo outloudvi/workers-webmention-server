@@ -1,6 +1,8 @@
 import minimatch from 'minimatch'
 import cheerio from 'cheerio'
 
+const KV_STORAGE_PREFIX = '_wm_'
+
 export function tryParse(text: string): Record<string, any> | null {
   try {
     return JSON.parse(text)
@@ -80,4 +82,25 @@ export function findAllValuesInJson(
     }
   }
   return false
+}
+
+export async function updateStorage(
+  source: string,
+  target: string,
+  status: number,
+) {
+  const add = status === 200
+  const key = KV_STORAGE_PREFIX + target
+  const cur: string[] = JSON.parse((await KV.get(key)) || '[]')
+  if (add) {
+    if (!cur.includes(source)) {
+      cur.push(source)
+      await KV.put(key, JSON.stringify(cur))
+    }
+  } else {
+    if (cur.includes(source)) {
+      cur.splice(cur.indexOf(source), 1)
+      await KV.put(key, JSON.stringify(cur))
+    }
+  }
 }
