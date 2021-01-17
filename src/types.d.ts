@@ -1,3 +1,0 @@
-interface Config {
-  acceptedDomains: string[]
-}

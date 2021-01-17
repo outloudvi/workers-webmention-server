@@ -1,4 +1,3 @@
-import config from './config'
 import {
   canMatch,
   findAllValuesInJson,
@@ -7,6 +6,8 @@ import {
   isValidUrl,
   tryParse,
 } from './utils'
+
+const allowedDomains = ALLOWED_DOMAINS.split('|')
 
 async function validateSource(src: string, dst: URL): Promise<number> {
   // Source page analysis
@@ -65,7 +66,7 @@ export async function handleRequest(request: Request): Promise<Response> {
   const source = new URL(src)
   const target = new URL(trg)
 
-  if (!canMatch(source.host, config.acceptedDomains)) {
+  if (!canMatch(source.host, allowedDomains)) {
     return generateResponse(400, 'Target not allowed by this server')
   }
 
