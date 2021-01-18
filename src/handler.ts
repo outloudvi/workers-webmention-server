@@ -101,10 +101,14 @@ export async function handleRequest(request: Request): Promise<Response> {
   if (request.method === 'GET') {
     // Webmention data API
     const req = new URL(request.url)
-    req.hash = ''
     const url = req.searchParams.get('url')
-    if (url && canMatch(req.host, allowedDomains)) {
-      const key = KV_STORAGE_PREFIX + String(url)
+    if (url === null || !isValidUrl(url)) {
+      return generateResponse(400, 'Bad request: invalid URL')
+    }
+    const urlObj = new URL(url)
+    urlObj.hash = ''
+    if (canMatch(urlObj.host, allowedDomains)) {
+      const key = KV_STORAGE_PREFIX + String(urlObj)
       const val = (await KV.get(key)) || '[]'
       return new Response(val, {
         headers: {
