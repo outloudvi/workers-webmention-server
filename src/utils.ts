@@ -88,8 +88,6 @@ export async function updateStorage(
   target: string,
   status: number,
 ) {
-  source.replace(/#$/, '')
-  target.replace(/#$/, '')
   const add = status === 200
   const key = KV_STORAGE_PREFIX + target
   const cur: string[] = JSON.parse((await KV.get(key)) || '[]')

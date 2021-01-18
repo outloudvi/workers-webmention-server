@@ -122,7 +122,14 @@ export async function handleRequest(request: Request): Promise<Response> {
     urlObj.hash = ''
     if (canMatch(urlObj.host, allowedDomains)) {
       const key = KV_STORAGE_PREFIX + String(urlObj)
-      const val = (await KV.get(key)) || '[]'
+      let val = (await KV.get(key)) || '[]'
+      try {
+        let urlList: string[] = JSON.parse(val)
+        urlList = urlList.map((x) => x.replace(/#$/, ''))
+        val = JSON.stringify(urlList)
+      } catch (_) {
+        //
+      }
       return new Response(val, {
         headers: {
           'Content-Type': 'application/json',
