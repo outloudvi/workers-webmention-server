@@ -91,6 +91,10 @@ async function processWebmentionScan(request: Request): Promise<Response> {
 }
 
 export async function handleRequest(request: Request): Promise<Response> {
+  if (request.method === 'OPTIONS') {
+    // CORS
+    return generateResponse(204, '')
+  }
   if (
     request.headers.get('Content-Type') === 'application/x-www-form-urlencoded'
   ) {

@@ -23,7 +23,10 @@ export function collectAttr($: any, obj: any, attrname: string): string[] {
 }
 export function generateResponse(code: number, message: string): Response {
   return new Response(message, {
-    headers: {},
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+    },
     status: code,
   })
 }
