@@ -115,6 +115,8 @@ export async function handleRequest(request: Request): Promise<Response> {
           'Content-Type': 'application/json',
         },
       })
+    } else {
+      return generateResponse(400, 'Bad request: URL not in allowed list')
     }
   }
 
