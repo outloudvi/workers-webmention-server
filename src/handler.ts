@@ -60,9 +60,18 @@ async function processWebmentionScan(request: Request): Promise<Response> {
   const source = new URL(src)
   const target = new URL(trg)
 
+  // Validation part
+  // Not part of the spec. Feel free to change them if you don't like it.
+
+  if (source.host === target.host) {
+    return generateResponse(400, 'Same-site webmention is meaningless')
+  }
+
   if (!canMatch(source.host, allowedDomains)) {
     return generateResponse(400, 'Target not allowed by this server')
   }
+
+  // Validation part ends
 
   source.hash = ''
   target.hash = ''
