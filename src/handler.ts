@@ -1,4 +1,4 @@
-import { KV_STORAGE_PREFIX } from './consts'
+import { CORS_HEADERS, KV_STORAGE_PREFIX } from './consts'
 import {
   canMatch,
   findAllValuesInJson,
@@ -82,20 +82,20 @@ async function processWebmentionScan(request: Request): Promise<Response> {
 
   switch (status) {
     case 200:
-      return new Response(`Good link: ${String(source)} -> ${String(target)}`, {
-        status: 200,
-      })
+      return generateResponse(
+        200,
+        `Good link: ${String(source)} -> ${String(target)}`,
+      )
     case 500:
-      return new Response(
+      return generateResponse(
+        500,
         `Internal server error: ${String(source)} -> ${String(target)}`,
-        {
-          status: 500,
-        },
       )
     default:
-      return new Response(`Bad link: ${String(source)} -> ${String(target)}`, {
-        status: 400,
-      })
+      return generateResponse(
+        400,
+        `Bad link: ${String(source)} -> ${String(target)}`,
+      )
   }
 }
 
@@ -126,6 +126,7 @@ export async function handleRequest(request: Request): Promise<Response> {
       return new Response(val, {
         headers: {
           'Content-Type': 'application/json',
+          ...CORS_HEADERS,
         },
       })
     } else {

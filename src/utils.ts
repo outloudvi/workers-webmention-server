@@ -1,6 +1,6 @@
 import minimatch from 'minimatch'
 import cheerio from 'cheerio'
-import { KV_STORAGE_PREFIX } from './consts'
+import { CORS_HEADERS, KV_STORAGE_PREFIX } from './consts'
 
 export function tryParse(text: string): Record<string, any> | null {
   try {
@@ -23,10 +23,7 @@ export function collectAttr($: any, obj: any, attrname: string): string[] {
 }
 export function generateResponse(code: number, message: string): Response {
   return new Response(message, {
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-    },
+    headers: CORS_HEADERS,
     status: code,
   })
 }
