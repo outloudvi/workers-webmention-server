@@ -67,7 +67,7 @@ async function processWebmentionScan(request: Request): Promise<Response> {
     return generateResponse(400, 'Same-site webmention is meaningless')
   }
 
-  if (!canMatch(source.host, allowedDomains)) {
+  if (!canMatch(target.host, allowedDomains)) {
     return generateResponse(400, 'Target not allowed by this server')
   }
 
