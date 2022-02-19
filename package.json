@@ -1,18 +1,16 @@
 {
-  "name": "pname",
+  "name": "workers-webmention-server",
   "version": "1.0.0",
-  "description": "Cloudflare worker TypeScript template",
-  "main": "index.js",
+  "description": "Webmention server on Cloudflare Workers.",
+  "main": "dist/worker.js",
   "scripts": {
     "build": "webpack",
     "dev": "NODE_ENV=development npm run build",
+    "publish": "wrangler publish",
     "format": "prettier --write '**/*.{ts,js,css,json,md}'",
-    "test:clean": "rimraf ./transpiled/src ./transpiled/test",
-    "test": "npm run test:clean && npm run transpile && mocha --require source-map-support/register --recursive transpiled/test",
-    "test:spec": "mocha --require ts-node/register src/**/*.spec.ts",
-    "transpile": "tsc --project ./test"
+    "test": "TS_NODE_FILES=true mocha --require ts-node/register src/**/*.spec.ts"
   },
-  "author": "author",
+  "author": "Outvi V <oss+npm@outv.im>",
   "license": "MIT OR Apache-2.0",
   "devDependencies": {
     "@cloudflare/workers-types": "^2.0.0",
@@ -23,7 +21,6 @@
     "mocha": "^8.0.1",
     "prettier": "^2.0.5",
     "rimraf": "^3.0.2",
-    "service-worker-mock": "^2.0.5",
     "ts-loader": "^7.0.5",
     "ts-node": "^9.1.1",
     "typescript": "^3.9.5",
