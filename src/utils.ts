@@ -16,17 +16,22 @@ export function canMatch(tar: string, lst: string[]): boolean {
   }
   return false
 }
+
 export function collectAttr($: any, obj: any, attrname: string): string[] {
-  const ret: string[] = []
-  obj.each((_: any, e: any) => ret.push($(e).attr(attrname)))
-  return ret
+  return obj
+    .map(function (this: any) {
+      return $(this).attr(attrname)
+    })
+    .get()
 }
+
 export function generateResponse(code: number, message: string): Response {
   return new Response(message, {
     headers: CORS_HEADERS,
     status: code,
   })
 }
+
 export function isValidUrl(url: string): boolean {
   try {
     const urled = new URL(url)
@@ -38,20 +43,19 @@ export function isValidUrl(url: string): boolean {
 export function matchURLExceptHash(str: string, tar: URL): boolean {
   try {
     const url = new URL(str)
-    url.hash = ''
-    tar.hash = ''
-    return String(url) === String(tar)
+    return atString(url) === atString(tar)
   } catch (_) {
     return false
   }
 }
 export function findLinkInHTML(html: string, dst: URL, base: string): boolean {
   const $ = cheerio.load(html)
-  for (const i of [
+  const urls = [
     ...collectAttr($, $('a'), 'href'),
     ...collectAttr($, $('img'), 'href'),
     ...collectAttr($, $('video'), 'src'),
-  ]) {
+  ]
+  for (const i of urls) {
     const absoluteUrl = String(new URL(i, base))
     if (matchURLExceptHash(absoluteUrl, dst)) {
       return true
@@ -102,4 +106,16 @@ export async function updateStorage(
       await KV.put(key, JSON.stringify(cur))
     }
   }
+}
+
+export function atString(url: URL): string {
+  // @ts-ignore
+  const u = new URL(url)
+  u.hash = ''
+  const final = String(u).replace(/#$/, '')
+  if (!final.replace('//', '').includes('/')) {
+    // Return https://example.com/ instead of https://example.com
+    return final + '/'
+  }
+  return final
 }

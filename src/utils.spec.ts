@@ -36,6 +36,15 @@ it('matchURLExceptHash', () => {
       base,
     ),
   ).to.be.true
+
+  const base2 = new URL('https://kotori.example.com/')
+  expect(matchURLExceptHash('https://kotori.example.com', base2)).to.be.true
+  expect(matchURLExceptHash('https://kotori.example.com/#123', base2)).to.be
+    .true
+  expect(matchURLExceptHash('https://kotori.example.com?t=3', base2)).to.be
+    .false
+  expect(matchURLExceptHash('https://kotori.example.com/?t=3', base2)).to.be
+    .false
 })
 
 it('findAllValuesInJson', () => {

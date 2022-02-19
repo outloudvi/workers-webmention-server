@@ -5,13 +5,14 @@ import {
   findLinkInHTML,
   generateResponse,
   isValidUrl,
+  atString,
   tryParse,
   updateStorage,
 } from './utils'
 
 const allowedDomains = ALLOWED_DOMAINS.split('|')
 
-async function validateSource(src: string, dst: URL): Promise<number> {
+export async function validateSource(src: string, dst: URL): Promise<number> {
   // Source page analysis
   const sourcePage = await fetch(String(src), {
     // TODO: limit redirect count
@@ -72,30 +73,23 @@ async function processWebmentionScan(request: Request): Promise<Response> {
   }
 
   // Validation part ends
-
-  source.hash = ''
   target.hash = ''
+  const status = await validateSource(atString(source), target)
 
-  const status = await validateSource(String(source), target)
-
-  await updateStorage(String(source), String(target), status)
+  const srcStr = atString(source)
+  const tarStr = atString(target)
+  await updateStorage(srcStr, tarStr, status)
 
   switch (status) {
     case 200:
-      return generateResponse(
-        200,
-        `Good link: ${String(source)} -> ${String(target)}`,
-      )
+      return generateResponse(200, `Good link: ${srcStr} -> ${tarStr}`)
     case 500:
       return generateResponse(
         500,
-        `Internal server error: ${String(source)} -> ${String(target)}`,
+        `Internal server error: ${srcStr} -> ${tarStr}`,
       )
     default:
-      return generateResponse(
-        400,
-        `Bad link: ${String(source)} -> ${String(target)}`,
-      )
+      return generateResponse(400, `Bad link: ${srcStr} -> ${tarStr}`)
   }
 }
 
@@ -119,9 +113,8 @@ export async function handleRequest(request: Request): Promise<Response> {
       return generateResponse(400, 'Bad request: invalid URL')
     }
     const urlObj = new URL(url)
-    urlObj.hash = ''
     if (canMatch(urlObj.host, allowedDomains)) {
-      const key = KV_STORAGE_PREFIX + String(urlObj)
+      const key = KV_STORAGE_PREFIX + atString(urlObj)
       let val = (await KV.get(key)) || '[]'
       try {
         let urlList: string[] = JSON.parse(val)
